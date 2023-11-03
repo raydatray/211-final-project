@@ -4,7 +4,7 @@ class Pathing:
     def __init__(self):
         #TODO: input validation for mapSize and coordinates
         self.mapSize = int(input("Enter the size of the square map: "))
-        self.map = [[0 for _ in range(self.mapSize) for _ in range(self.mapSize)]]
+        self.board = [[0 for _ in range(self.mapSize)] for _ in range(self.mapSize)]
         self.targets = []
         self.path = deque()
 
@@ -13,7 +13,7 @@ class Pathing:
             xCoordinate, yCoordinate = coordinate.split(",")
             translatedCoords = self.translateCoordinates(int(xCoordinate), int(yCoordinate), self.mapSize)
 
-            self.map[translatedCoords[0]][translatedCoords[1]] = 1
+            self.board[translatedCoords[0]][translatedCoords[1]] = 1
             self.targets.append(translatedCoords)
 
 
@@ -35,16 +35,6 @@ class Pathing:
         Targets are ordered in decreasing manhattan distance from the origin
         Movements are translated into instructions that are placed into a deque
         """
-        sortedTargets = sorted(targets, key = lambda target: manhattanDistance(target, origin)) 
-        impassableCoords = set()
-
-        #For each target, 
-
-        while sortedTargets:
-            target = sortedTargets.pop()
-            self.path.append(bfs(target, origin))
-            origin = target 
-
         def manhattanDistance(point1: int, point2: int) -> int:
             '''Returns the manhattan distance of two points (cardinal direction movements only)'''
             x1, y1 = point1
@@ -81,6 +71,7 @@ class Pathing:
                 
             directions = [[0,1], [0,-1], [1,0], [-1,0]] #right, left, up, down
             visited = set()
+            visited.add(origin)
             parents = {}
             q = deque()
             q.append(origin)
@@ -98,8 +89,19 @@ class Pathing:
                         q.append((newX, newY))
                         visited.add((newX, newY))
                         parents[(newX, newY)] = (x,y)
+    
+        sortedTargets = sorted(targets, key = lambda target: manhattanDistance(target, origin)) 
+        impassableCoords = set()
 
-        return None
+        #For each target, 
+
+        while sortedTargets:
+            target = sortedTargets.pop()
+            self.path.append(bfs(target, origin))
+            origin = target 
+
+        print(self.path)
+        
 
 
 
