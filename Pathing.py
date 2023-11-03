@@ -1,8 +1,6 @@
 from collections import deque
 
 class Pathing:
-
-
     def __init__(self):
         #TODO: input validation for mapSize and coordinates
         self.mapSize = int(input("Enter the size of the square map: "))
@@ -24,9 +22,6 @@ class Pathing:
     def translateCoordinates(self, x, y, size):
         """
         Converts a 3,3 indexed 2d array (90 degree ) coordinate to a 0,0 indexed 2d array coordinate
-
-
-
         """
         newX = size - y - 1
         newY = x
@@ -40,23 +35,26 @@ class Pathing:
         Targets are ordered in decreasing manhattan distance from the origin
         Movements are translated into instructions that are placed into a deque
         """
-        sortedTargets = sorted(targets, key = lambda target: manhattanDistance(target, origin), reverse = True) 
+        sortedTargets = sorted(targets, key = lambda target: manhattanDistance(target, origin)) 
         impassableCoords = set()
 
-        while len(sortedTargets) > 0:
-            visited = set()
-            bfs()
+        #For each target, 
 
-        def manhattanDistance(point1, point2):
+        while sortedTargets:
+            target = sortedTargets.pop()
+            self.path.append(bfs(target, origin))
+            origin = target 
+
+        def manhattanDistance(point1: int, point2: int) -> int:
             '''Returns the manhattan distance of two points (cardinal direction movements only)'''
             x1, y1 = point1
             x2, y2 = point2
 
             return abs(x1 - x2) + abs(y1 - y2)
 
-        def bfs(r, c, target):
+        def bfs(target: tuple, origin: tuple):
 
-            def isValid(r, c):
+            def isValid(r: int, c: int) -> bool:
                 if (
                     r not in range(self.mapSize)
                     or c not in range(self.mapSize)
@@ -67,19 +65,41 @@ class Pathing:
                 else:
                     return True
                 
-            def reconstructPath(parents, target):
+            def reconstructPath(parents: dict, target: tuple):
+                """
+                Reconstruct the path found by the BFS algorithm using a hashmap
+                key:value -> node: parent node (1:1 mapping, each node has one parent node for a given bfs)
+                Nodes are appended to the deque that consists of the path found 
+                """
+                path = []
+                while target:
+                    path.append(target)
+                    target = parents.get(target, None)
                 
+                return path
+
                 
             directions = [[0,1], [0,-1], [1,0], [-1,0]] #right, left, up, down
+            visited = set()
+            parents = {}
             q = deque()
-            q.append((r,c))
-
-            visited.add((r,c))
+            q.append(origin)
 
             while q:
                 x, y = q.popleft()
 
+                if (x,y) == target:
+                    return reconstructPath(parents, target)
+
                 for dx, dy in directions:
+                    newX, newY = x + dx, y + dy
+
+                    if isValid(newX, newY): 
+                        q.append((newX, newY))
+                        visited.add((newX, newY))
+                        parents[(newX, newY)] = (x,y)
+
+        return None
 
 
 
