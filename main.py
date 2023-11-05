@@ -1,5 +1,8 @@
 from Pathing import *
 
-
+#TEST CODE FOR PATHING
 pathing = Pathing()
-pathing.generatePath(pathing.targets, (3,0))
+foundPath = pathing.generatePath(pathing.targets, (3,0))
+print(foundPath)
+translatedPath = pathing.generateInstructions(foundPath)
+print(translatedPath)
