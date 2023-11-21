@@ -14,11 +14,11 @@ class Movement:
         self.rightWheel = rightWheel
         self.leftWheel = leftWheel
         #INIT MOTOR POWERS (TEST)
-        self.rightWheel.set_power(100)
-        self.leftWheel.set_power(100)
+        self.rightWheel.set_power(50)
+        self.leftWheel.set_power(50)
         self.orientation = "UP"
 
-    def classify_color(self, values: list[int]):
+    def classify_color(self, values: list[int]) -> str:
         r, g, b = values
         # Normalize the input RGB values
         total = r + g + b
@@ -56,20 +56,21 @@ class Movement:
             pass
 
         
-        self.rightWheel.set_dps(100)
-        self.leftWheel.set_dps(100)
+        self.rightWheel.set_dps(-100)
+        self.leftWheel.set_dps(-100)
 
         rightColor = self.classify_color(self.rightColorSensor.get_rgb())
         leftColor = self.classify_color(self.leftColorSensor.get_rgb())
     
         #move forward, until green is reached 
         #while moving poll for right/left bad reads
-        while (leftColor != "GREEN" or rightColor != "GREEN"):
-            if leftColor == "BOARD": #correct rightward
+        while (leftColor != 'GREEN' and rightColor != 'GREEN'):
+            """
+            if leftColor == 'BOARD': #correct rightward
                 correctRight()
-            if rightColor == "BOARD": #correct leftward
+            if rightColor == 'BOARD': #correct leftward
                 correctLeft()
-            
+            """
             #reread the color after .5 seconds
 
             time.sleep(.5)
@@ -80,30 +81,85 @@ class Movement:
         self.rightWheel.set_dps(0)
         self.leftWheel.set_dps(0)
 
+        return True
+
 
     def turnRight(self) -> bool:
-
         #turn the left motor forward and the right motor backwards
         #if the orientation is up or down, rotate until blue is read
         #if the orientation is right or left, rotate until red is read
+
+        #rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+
+    
+        if self.orientation == "UP" or self.orientation == "DOWN":
+            targetColor = "BLUE"
+        else:
+            targetColor = "RED"
+
         self.rightWheel.set_dps(-100)
         self.leftWheel.set_dps(100)
 
-        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
-        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+        while (leftColor != targetColor):
+            time.sleep(.5)
 
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+
+        self.rightWheel.set_dps(0)
+        self.leftWheel.set_dps(0)
         
-        pass
+        return True
 
     def turnLeft(self) -> bool:
         #turn the right motor forward and the left motor backwards
         #if the orientation is up or down, rotate until blue is read
         #if the orientation is right or left, rotate until red is read
 
-        pass
+        #rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+
+    
+        if self.orientation == "UP" or self.orientation == "DOWN":
+            targetColor = "BLUE"
+        else:
+            targetColor = "RED"
+
+        self.rightWheel.set_dps(100)
+        self.leftWheel.set_dps(-100)
+
+        while (rightColor != targetColor):
+            time.sleep(.5)
+
+            rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+
+        self.rightWheel.set_dps(0)
+        self.leftWheel.set_dps(0)
+        
+        return True
 
     def turnAround(self) -> bool:
         #basically turn right twice
         #rotate until the original color is read again
 
-        pass
+        leftSensor = self.classify_color(self.leftColorSensor.get_rgb())
+        colorCount = 0
+
+        if self.orientation == "UP" or self.orientation == "DOWN":
+            targetColor = "RED"
+        else:
+            targetColor = "BLUE"
+
+        self.rightWheel.set_dps(-100)
+        self.leftWheel.set_dps(100)
+        
+        while (colorCount != 2):
+            if leftSensor == targetColor:
+                colorCount += 1
+
+            time.sleep(.5)
+
+        self.rightWheel.set_dps(0)
+        self.leftWheel.set_dps(0)
+        return True
+
