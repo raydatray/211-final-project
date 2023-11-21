@@ -102,12 +102,29 @@ class Pathing:
 
         return path
 
-    def generateInstructions(self, path: list[tuple]) -> list[str]:
+    def generateInstructions(self, path: list[tuple]) -> str:
+
+        def generateRotations(currentOrientation: str, instruction: str) -> list[str]:
+            #Case 1: instruction matches current orientation:
+                # Do not insert a rotation and MOVE
+            #Case 2: instruction does match the current orientation:
+                # 
+
+            orientationPairings = {
+                "UP": {"RIGHT": "RIGHT", "DOWN": "TURN AROUND", "LEFT": "LEFT"},
+                "RIGHT": {"UP": "LEFT", "DOWN": "RIGHT", "LEFT": "TURN AROUND"},
+                "DOWN": {"UP": "TURN AROUND", "RIGHT": "LEFT", "LEFT": "RIGHT"},
+                "LEFT": {"UP": "RIGHT", "RIGHT": "TURN AROUND", "DOWN": "LEFT"}
+            }
+
+            return orientationPairings.get(currentOrientation, {}).get(instruction, None)
+            
         """
         THIS IS A LESS THAN OPTIMAL FUNCTION\n
         Translates a list of coordinates into a list of cardinal directions to be traversed\n
         Drop instructions are also included in this set of instructions (When targets are reached)
         """
+        orientation = "UP" #init orientation, upwards (facing 0,0)
         instructions = []
 
         for start, end in zip(path[0::], path[1::]):
@@ -115,17 +132,26 @@ class Pathing:
             eR, eC = end
             dR, dC = eR - sR, eC - sC
 
+            direction = None
+
             if start in self.targets:
                 instructions.append("DROP")
 
             if dR == 1:
-                instructions.append("DOWN")
+                direction = "DOWN"
             elif dR == -1:
-                instructions.append("UP")
+                direction = "UP"
             elif dC == 1:
-                instructions.append("RIGHT")
+                direction = "RIGHT"
             elif dC == -1:
-                instructions.append("LEFT")
+                direction = "LEFT"
+
+            if orientation != direction:
+                instructions.append(generateRotations(orientation, direction))
+
+            instructions.append("MOVE")
+
+            orientation = direction
                 
         return instructions
 
