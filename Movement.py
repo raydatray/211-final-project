@@ -18,7 +18,8 @@ class Movement:
         self.leftWheel.set_power(100)
         self.orientation = "UP"
 
-    def classify_color(self, r, g, b):
+    def classify_color(self, values: list[int]):
+        r, g, b = values
         # Normalize the input RGB values
         total = r + g + b
         if total == 0:
@@ -58,11 +59,8 @@ class Movement:
         self.rightWheel.set_dps(100)
         self.leftWheel.set_dps(100)
 
-        rR, rG, rB = self.rightColorSensor.get_rgb()
-        lR, lG, lB = self.leftColorSensor.get_rgb()
-
-        rightColor = self.classify_color(rR, rG, rB)
-        leftColor = self.classify_color(lR, lG, lB)
+        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
     
         #move forward, until green is reached 
         #while moving poll for right/left bad reads
@@ -76,12 +74,8 @@ class Movement:
 
             time.sleep(.5)
 
-            rR, rG, rB = self.rightColorSensor.get_rgb()
-            lR, lG, lB = self.leftColorSensor.get_rgb()
-
-            rightColor = self.classify_color(rR, rG, rB)
-            leftColor = self.classify_color(lR, lG, lB)
-
+            rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
 
         self.rightWheel.set_dps(0)
         self.leftWheel.set_dps(0)
@@ -92,7 +86,13 @@ class Movement:
         #turn the left motor forward and the right motor backwards
         #if the orientation is up or down, rotate until blue is read
         #if the orientation is right or left, rotate until red is read
+        self.rightWheel.set_dps(-100)
+        self.leftWheel.set_dps(100)
 
+        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+
+        
         pass
 
     def turnLeft(self) -> bool:
