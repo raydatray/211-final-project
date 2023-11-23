@@ -3,11 +3,13 @@ from collections import deque
 class Pathing:
     def __init__(self):
         #TODO: input validation for mapSize and coordinates
-        self.mapSize = int(input("Enter the size of the square map: "))
+        #self.mapSize = int(input("Enter the size of the square map: "))
+        self.mapSize = 4
         self.board = [[0 for _ in range(self.mapSize)] for _ in range(self.mapSize)]
         self.targets = []
+        self.suppressants = {}
         self.path = deque()
-
+        """
         for target in range(3):
             coordinate = input("Enter the coordinate of a target: " + str(target + 1) + " as a two comma separated numbers ex. 3,4: ")
             xCoordinate, yCoordinate = coordinate.split(",")
@@ -15,6 +17,25 @@ class Pathing:
 
             self.board[translatedCoords[0]][translatedCoords[1]] = 1
             self.targets.append(translatedCoords)
+        """
+
+
+        #ADD INPUT VALIDAITON1!!
+        inputPrompt = input("Please input the 3 fires and their type in the following order: x,y,fireType: ")
+
+        inputList = inputPrompt.split(',')
+
+        coordinates = [self.translateCoordinates(int(inputList[i]), int(inputList[i+1]), self.mapSize) for i in range(0, len(inputList), 3)]
+        fireTypes = inputList[2::3]
+
+        self.targets = coordinates
+        self.suppressants = {coordinates[i]:fireTypes for i, fireTypes in enumerate(fireTypes)}
+        print()
+        
+        #print(self.suppressants)
+        #print(coordinates)
+            
+
 
     def translateCoordinates(self, x: int, y: int, size: int) -> tuple:
         """
@@ -91,11 +112,13 @@ class Pathing:
     
         sortedTargets = sorted(targets, key = lambda target: manhattanDistance(target, origin))
         sortedTargets.insert(0, origin) #Add the origin to the end of the queue 
+        #print(sortedTargets)
         impassableCoords = set()
         path = []
 
         while sortedTargets:
             target = sortedTargets.pop()
+            #print(target)
             subPath = bfs(target, origin)    
             origin = subPath[-2] #BACKTRACK ONE NODE
             path = path + subPath
@@ -111,10 +134,10 @@ class Pathing:
                 # 
 
             orientationPairings = {
-                "UP": {"RIGHT": "RIGHT", "DOWN": "TURN AROUND", "LEFT": "LEFT"},
-                "RIGHT": {"UP": "LEFT", "DOWN": "RIGHT", "LEFT": "TURN AROUND"},
-                "DOWN": {"UP": "TURN AROUND", "RIGHT": "LEFT", "LEFT": "RIGHT"},
-                "LEFT": {"UP": "RIGHT", "RIGHT": "TURN AROUND", "DOWN": "LEFT"}
+                "UP": {"RIGHT": "RIGHT", "DOWN": "BACK", "LEFT": "LEFT"},
+                "RIGHT": {"UP": "LEFT", "DOWN": "RIGHT", "LEFT": "BACK"},
+                "DOWN": {"UP": "BACK", "RIGHT": "LEFT", "LEFT": "RIGHT"},
+                "LEFT": {"UP": "RIGHT", "RIGHT": "BACK", "DOWN": "LEFT"}
             }
 
             return orientationPairings.get(currentOrientation, {}).get(instruction, None)
@@ -136,6 +159,7 @@ class Pathing:
 
             if start in self.targets:
                 instructions.append("DROP")
+                instructions.append(self.suppressants.get(start, None))
 
             if dR == 1:
                 direction = "DOWN"
@@ -147,11 +171,13 @@ class Pathing:
                 direction = "LEFT"
 
             if orientation != direction:
-                instructions.append(generateRotations(orientation, direction))
+                lastGenerated = generateRotations(orientation, direction)
+                instructions.append(lastGenerated)
 
-            instructions.append("MOVE")
 
-            orientation = direction
+            if lastGenerated != "BACK":
+                instructions.append("MOVE")
+                orientation = direction
                 
         return instructions
 
