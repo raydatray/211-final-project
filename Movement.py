@@ -270,15 +270,7 @@ class Movement:
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
         
-        # Change orientation
-        if self.orientation == "UP":
-            self.orientation = "DOWN"
-        elif self.orientation == "LEFT":
-            self.orientation = "RIGHT"
-        elif self.orientation == "DOWN":
-            self.orientation = "UP"
-        else:
-            self.orientation = "LEFT"
+        # Change orientatioN
         
         return True
 
