@@ -5,7 +5,8 @@ class Pathing:
         #TODO: input validation for mapSize and coordinates
         #self.mapSize = int(input("Enter the size of the square map: "))
         self.mapSize = 4
-        self.board = [[0 for _ in range(self.mapSize)] for _ in range(self.mapSize)]
+        #self.board = [[0 for _ in range(self.mapSize)] for _ in range(self.mapSize)]
+        self.start = (3,0)
         self.targets = []
         self.suppressants = {}
         self.path = deque()
@@ -45,7 +46,7 @@ class Pathing:
         newY = x
         return (newX, newY)
 
-    def generatePath(self, targets: list[tuple], origin: tuple):
+    def generatePath(self):
         """
         Generates the most optimal path given a list of targets and origin\n
         Targets are ordered in decreasing manhattan distance from the origin\n
@@ -110,11 +111,14 @@ class Pathing:
                         visited.add((newR, newC))
                         parents[(newR, newC)] = (r, c)
     
-        sortedTargets = sorted(targets, key = lambda target: manhattanDistance(target, origin))
-        sortedTargets.insert(0, origin) #Add the origin to the end of the queue 
+        origin = self.start
         #print(sortedTargets)
         impassableCoords = set()
         path = []
+
+        sortedTargets = sorted(self.targets, key = lambda target: manhattanDistance(target, origin))
+        sortedTargets.insert(0, self.start) #Add the origin to the end of the queue 
+       
 
         while sortedTargets:
             target = sortedTargets.pop()
