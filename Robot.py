@@ -26,7 +26,37 @@ class Robot:
     def runRobot(self):
         foundPath = self.pathing.generatePath()
         translatedPath = self.pathing.generateInstructions(foundPath)
+        
+        
+        for i in range(0, len(translatedPath)):
+            print(i, len(translatedPath), translatedPath[i])
+            if translatedPath[i] == "RIGHT":
+                self.movement.turnRight()
+                
+            if translatedPath[i] == "LEFT":
+                self.movement.turnLeft()
 
+            if translatedPath[i] == "BACK":
+                self.movement.backUp()
+
+            if translatedPath[i] == "MOVE":
+                if i != (len(translatedPath) - 1):
+                    print("reachedx")
+                    if translatedPath[i+1] != "DROP":
+                        self.movement.fullMoveForward()
+                    else:
+                        self.movement.partialMoveForward()
+                else:
+                    self.movement.fullMoveForward() #extremely ghetto fix might not work
+            
+            if translatedPath[i] == "DROP":
+                if i != (len(translatedPath) - 1):
+                    print("reachedy")
+                    self.carousel.rotateToBlockByName(translatedPath[i+1])
+                    self.carousel.dropCurrentBlock()
+            time.sleep(.25)
+
+        """
         for instruction, nextInstruction in zip(translatedPath[0::], translatedPath[1::]):
             if instruction == "RIGHT":
                 self.movement.turnRight()
@@ -46,5 +76,8 @@ class Robot:
             if instruction == "DROP":
                 self.carousel.rotateToBlockByName(nextInstruction)
                 self.carousel.dropCurrentBlock()
+            print(instruction, nextInstruction)
+            """
+        
         
     

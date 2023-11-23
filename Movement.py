@@ -47,12 +47,20 @@ class Movement:
         return classified_color
 
     def correctLeft(self):
-        self.rightWheel.set_power(-25)
+        self.rightWheel.set_power(-28)
         self.leftWheel.set_power(-20)
 
     def correctRight(self):
         self.rightWheel.set_power(-20)
-        self.leftWheel.set_power(-25)
+        self.leftWheel.set_power(-28)
+        
+    def correctLeftBack(self):
+        self.rightWheel.set_power(20)
+        self.leftWheel.set_power(28)
+
+    def correctRightBack(self):
+        self.rightWheel.set_power(28)
+        self.leftWheel.set_power(20)
 
     def partialMoveForward(self) -> bool:
         if self.orientation == "UP" or self.orientation == "DOWN":
@@ -100,7 +108,7 @@ class Movement:
         else:
             targetColor = "BLUE"
         
-        self.rightPower = -25
+        self.rightPower = -24.5
         self.leftPower = -25
         self.rightWheel.set_power(self.rightPower)
         self.leftWheel.set_power(self.leftPower)
@@ -250,16 +258,16 @@ class Movement:
         while time.time() < timeEnd:
             #if leftColor != 'BOARD' and leftColor != 'GREEN': #correct rightward
             if leftColor == targetColor: #and rightColor != targetColor:
-                self.correctLeft()
+                self.correctLeftBack()
                 leftColor = self.classify_color(self.leftColorSensor.get_rgb())
             #elif rightColor != 'BOARD' and rightColor != 'GREEN': #correct leftward
             elif rightColor == targetColor: #and leftColor != targetColor:
-                self.correctRight()
+                self.correctRightBack()
                 rightColor = self.classify_color(self.rightColorSensor.get_rgb())
             
             time.sleep(.05)
             
-            self.rightPower = 25
+            self.rightPower = 24.5
             self.leftPower = 25
             self.rightWheel.set_power(self.rightPower)
             self.leftWheel.set_power(self.leftPower)
@@ -270,8 +278,7 @@ class Movement:
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
         
-        # Change orientatioN
-        
         return True
+
 
 

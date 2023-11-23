@@ -7,7 +7,7 @@ class Carousel:
     #test comment....
 
     def __init__(self, carouselMotor, trapdoorMotor):
-        self.blocks = ["D","B","C","A","E","F"]
+        self.blocks = ["D","E","F","A","B","C"]
         self.pointer = 0
         self.currentBlock = "GREEN"
         self.unavailableBlocks = set()
@@ -60,7 +60,7 @@ class Carousel:
     def dropCurrentBlock(self):
         self.trapdoorMotor.set_limits(90,180)
         self.trapdoorMotor.reset_encoder() #questionable usage may delete
-        self.trapdoorMotor.set_position.relative(-150)
+        self.trapdoorMotor.set_position_relative(-150)
         time.sleep(2)
         self.trapdoorMotor.set_position_relative(220)
         time.sleep(2)
@@ -68,8 +68,8 @@ class Carousel:
 
         #Update the array and rotate the carousel
         self.unavailableBlocks.add(self.currentBlock)
-        self.blocks[self.pointer] = None #Void the current index of the array 
-        self.rotateToBlockByIndex((self.pointer +  1 % 6)) #Rotate to next index
+        #self.blocks[self.pointer] = None #Void the current index of the array 
+        #self.rotateToBlockByIndex((self.pointer +  1 % 6)) #Rotate to next index
         
         return
 
