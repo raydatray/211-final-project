@@ -47,22 +47,21 @@ class Movement:
         return classified_color
 
     def correctLeft(self):
-        self.rightPower += 0.5
-        self.rightWheel.set_power(self.rightPower)
-        self.leftPower -= 0.5
-        self.leftWheel.set_power(self.leftPower)
+        self.rightWheel.set_power(-25)
+        self.leftWheel.set_power(-20)
 
     def correctRight(self):
-        self.rightPower -= 0.5
-        self.rightWheel.set_power(self.rightPower)
-        self.leftPower += 0.5
-        self.leftWheel.set_power(self.leftPower)
+        self.rightWheel.set_power(-20)
+        self.leftWheel.set_power(-25)
 
-    def moveForward(self) -> bool:
+    def partialMoveForward(self) -> bool:
+        if self.orientation == "UP" or self.orientation == "DOWN":
+            targetColor = "RED"
+        else:
+            targetColor = "BLUE"
         
-        self.rightPower = -29.5
-        self.leftPower = -30
-        
+        self.rightPower = -25
+        self.leftPower = -25
         self.rightWheel.set_power(self.rightPower)
         self.leftWheel.set_power(self.leftPower)
 
@@ -73,48 +72,91 @@ class Movement:
         #while moving poll for right/left bad reads
         while (leftColor != 'GREEN' and rightColor != 'GREEN'):
             
-            if leftColor != 'BOARD' and rightColor == "BOARD": #correct rightward
-                self.correctRight()
-            if rightColor != 'BOARD' and leftColor == "BOARD": #correct leftward
+            #if leftColor != 'BOARD':
+            if leftColor == targetColor:
                 self.correctLeft()
-                
-            #reread the color after .5 seconds
+            #elif rightColor != 'BOARD':
+            if rightColor == targetColor:
+                self.correctRight()
+            
             time.sleep(.05)
-
-            rightColor = self.classify_color(self.rightColorSensor.get_rgb())
-            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
             
-        self.rightWheel.set_power(0)
-        self.leftWheel.set_power(0)
-        print("MOVED FORWARD")
-
-        return True
-    
-    def finishMoveForward(self) -> bool:
-        timeEnd = time.time() + 1.5
-        
-        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
-        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
-        
-        while time.time() < timeEnd:
-            self.rightPower = -30
-            self.leftPower = -30
-            
+            self.rightPower = -25
+            self.leftPower = -25
             self.rightWheel.set_power(self.rightPower)
             self.leftWheel.set_power(self.leftPower)
             
-            if leftColor != 'BOARD' and leftColor != 'GREEN': #correct rightward
-                self.correctRight()
-            if rightColor != 'BOARD' and leftColor != 'GREEN': #correct leftward
-                self.correctLeft()
-                
             rightColor = self.classify_color(self.rightColorSensor.get_rgb())
             leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+        
+        self.rightWheel.set_power(0)
+        self.leftWheel.set_power(0)
+
+        return True
+    
+    def fullMoveForward(self) -> bool:
+        if self.orientation == "UP" or self.orientation == "DOWN":
+            targetColor = "RED"
+        else:
+            targetColor = "BLUE"
+        
+        self.rightPower = -25
+        self.leftPower = -25
+        self.rightWheel.set_power(self.rightPower)
+        self.leftWheel.set_power(self.leftPower)
+
+        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+    
+        #move forward, until green is reached 
+        #while moving poll for right/left bad reads
+        while (leftColor != 'GREEN' and rightColor != 'GREEN'):
             
+            #if leftColor != 'BOARD':
+            while leftColor == targetColor:
+                self.correctLeft()
+                time.sleep(.05)
+                leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+            #elif rightColor != 'BOARD':
+            while rightColor == targetColor:
+                self.correctRight()
+                time.sleep(.05)
+                rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+            
+            self.rightPower = -25
+            self.leftPower = -25
+            self.rightWheel.set_power(self.rightPower)
+            self.leftWheel.set_power(self.leftPower)
+            
+            rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+            time.sleep(.1)
+        
+        timeEnd = time.time() + 1.3
+        
+        while time.time() < timeEnd:
+            #if leftColor != 'BOARD' and leftColor != 'GREEN': #correct rightward
+            if leftColor == targetColor: #and rightColor != targetColor:
+                self.correctLeft()
+                leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+            #elif rightColor != 'BOARD' and rightColor != 'GREEN': #correct leftward
+            elif rightColor == targetColor: #and leftColor != targetColor:
+                self.correctRight()
+                rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+            
+            time.sleep(.05)
+            
+            self.rightPower = -25
+            self.leftPower = -25
+            self.rightWheel.set_power(self.rightPower)
+            self.leftWheel.set_power(self.leftPower)
+                  
+            rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+           
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
         
-        print("FINISHED MOVING FORWARD")
         return True
             
 
@@ -153,7 +195,6 @@ class Movement:
         else:
             self.orientation = "UP"
         
-        print("TURNED RIGHT")
         return True
 
     def turnLeft(self) -> bool:
@@ -191,31 +232,41 @@ class Movement:
         else:
             self.orientation = "UP"
         
-        print("TURNED LEFT")
         return True
 
-    def turnAround(self) -> bool:
+    def backUp(self) -> bool:
         #basically turn right twice
         #rotate until the original color is read again
-
-        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
-
         if self.orientation == "UP" or self.orientation == "DOWN":
             targetColor = "RED"
         else:
             targetColor = "BLUE"
-
-        self.rightWheel.set_power(30)
-        self.leftWheel.set_power(-30)
-            
-        while (rightColor != targetColor):
-            time.sleep(.1)
-            rightColor = self.classify_color(self.rightColorSensor.get_rgb())
         
-        while (rightColor != "BOARD"):
-            time.sleep(.1)
+        rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+            
+        timeEnd = time.time() + 1.75
+        
+        while time.time() < timeEnd:
+            #if leftColor != 'BOARD' and leftColor != 'GREEN': #correct rightward
+            if leftColor == targetColor: #and rightColor != targetColor:
+                self.correctLeft()
+                leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+            #elif rightColor != 'BOARD' and rightColor != 'GREEN': #correct leftward
+            elif rightColor == targetColor: #and leftColor != targetColor:
+                self.correctRight()
+                rightColor = self.classify_color(self.rightColorSensor.get_rgb())
+            
+            time.sleep(.05)
+            
+            self.rightPower = 25
+            self.leftPower = 25
+            self.rightWheel.set_power(self.rightPower)
+            self.leftWheel.set_power(self.leftPower)
+                  
             rightColor = self.classify_color(self.rightColorSensor.get_rgb())
-
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+           
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
         
@@ -229,7 +280,6 @@ class Movement:
         else:
             self.orientation = "LEFT"
         
-        print("TURNED AROUND")
         return True
 
 
