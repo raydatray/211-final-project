@@ -7,7 +7,7 @@ class Carousel:
     #test comment....
 
     def __init__(self, carouselMotor, trapdoorMotor):
-        self.blocks = ["GREEN","YELLOW","RED","BLUE","PURPLE","ORANGE"]
+        self.blocks = ["D","B","C","A","E","F"]
         self.pointer = 0
         self.currentBlock = "GREEN"
         self.unavailableBlocks = set()
