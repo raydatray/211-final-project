@@ -100,7 +100,6 @@ class Pathing:
                 r, c = q.popleft()
 
                 if (r, c) == target:
-                    impassableCoords.add((r, c))
                     return reconstructPath(parents, target)
 
                 for dx, dy in directions:
@@ -113,7 +112,7 @@ class Pathing:
     
         origin = self.start
         #print(sortedTargets)
-        impassableCoords = set()
+        impassableCoords = set(self.targets)
         path = []
 
         sortedTargets = sorted(self.targets, key = lambda target: manhattanDistance(target, origin))
@@ -122,10 +121,12 @@ class Pathing:
 
         while sortedTargets:
             target = sortedTargets.pop()
+            impassableCoords.discard(target)
             #print(target)
             subPath = bfs(target, origin)    
             origin = subPath[-2] #BACKTRACK ONE NODE
             path = path + subPath
+            impassableCoords.add(target)
 
         return path
 
@@ -177,7 +178,9 @@ class Pathing:
             if orientation != direction:
                 lastGenerated = generateRotations(orientation, direction)
                 instructions.append(lastGenerated)
-
+            else:
+                instructions.append("MOVE")
+                continue
 
             if lastGenerated != "BACK":
                 instructions.append("MOVE")

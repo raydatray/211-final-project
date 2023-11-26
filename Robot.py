@@ -56,28 +56,4 @@ class Robot:
                     self.carousel.dropCurrentBlock()
             time.sleep(.25)
 
-        """
-        for instruction, nextInstruction in zip(translatedPath[0::], translatedPath[1::]):
-            if instruction == "RIGHT":
-                self.movement.turnRight()
-                
-            if instruction == "LEFT":
-                self.movement.turnLeft()
-
-            if instruction == "BACK":
-                self.movement.backUp()
-
-            if instruction == "MOVE":
-                if nextInstruction != "DROP":
-                    self.movement.fullMoveForward()
-                else:
-                    self.movement.partialMoveForward()
-            
-            if instruction == "DROP":
-                self.carousel.rotateToBlockByName(nextInstruction)
-                self.carousel.dropCurrentBlock()
-            print(instruction, nextInstruction)
-            """
-        
-        
     
