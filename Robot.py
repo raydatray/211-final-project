@@ -39,6 +39,9 @@ class Robot:
             if translatedPath[i] == "BACK":
                 self.movement.backUp()
 
+            if translatedPath[i] == "TURN AROUND":
+                self.movement.turnAround() #TODO!!!!
+
             if translatedPath[i] == "MOVE":
                 if i != (len(translatedPath) - 1):
                     print("reachedx")

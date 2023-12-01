@@ -129,7 +129,6 @@ class Pathing:
             impassableCoords.add(target)
 
         return path
-
     def generateInstructions(self, path: list[tuple]) -> str:
 
         def generateRotations(currentOrientation: str, instruction: str) -> list[str]:
@@ -154,6 +153,7 @@ class Pathing:
         """
         orientation = "UP" #init orientation, upwards (facing 0,0)
         instructions = []
+        prevBack = False
 
         for start, end in zip(path[0::], path[1::]):
             sR, sC = start
@@ -177,7 +177,17 @@ class Pathing:
 
             if orientation != direction:
                 lastGenerated = generateRotations(orientation, direction)
-                instructions.append(lastGenerated)
+
+                if lastGenerated == "BACK" and prevBack:
+                    instructions.append("TURN AROUND")
+                    instructions.append("MOVE")
+                    orientation = direction
+                    prevBack = False
+                    continue
+                else:
+                    instructions.append(lastGenerated)
+                
+                prevBack = (lastGenerated == "BACK" and not prevBack)
             else:
                 instructions.append("MOVE")
                 continue
