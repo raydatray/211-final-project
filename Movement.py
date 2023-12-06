@@ -243,6 +243,39 @@ class Movement:
         return True
     
     #ADD TURNAROUND
+    def turnAround(self) -> bool:
+        leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+
+        if self.orientation == "UP" or self.orientation == "DOWN":
+            targetColor = "RED"
+        else:
+            targetColor = "BLUE"
+
+        self.rightWheel.set_power(-20)
+        self.leftWheel.set_power(20)
+
+        while (leftColor != targetColor):
+            time.sleep(.1)
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+
+        while (leftColor != "BOARD"):
+            time.sleep(.1)
+            leftColor = self.classify_color(self.leftColorSensor.get_rgb())
+
+        self.rightWheel.set_power(0)
+        self.rightWheel.set_power(0)
+
+        # Change orientation
+        if self.orientation == "UP":
+            self.orientation = "DOWN"
+        elif self.orientation == "LEFT":
+            self.orientation = "RIGHT"
+        elif self.orientation == "RIGHT":
+            self.orientation = "LEFT"
+        else:
+            self.orientation = "UP"
+
+        return True
 
     def backUp(self) -> bool:
         #basically turn right twice

@@ -10,9 +10,8 @@ print(translatedPath)
 
 1,2,A,2,2,D,3,0,C
 """
-"""
-robot = Robot()
-robot.initSubsystems()
-robot.runRobot()
-"""
-reset_brick()
+while True:
+    robot = Robot()
+    robot.initSubsystems()
+    robot.runRobot()
+    reset_brick()
