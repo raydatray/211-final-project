@@ -195,7 +195,12 @@ class Pathing:
             if lastGenerated != "BACK":
                 instructions.append("MOVE")
                 orientation = direction
-                
+
+        if direction == "LEFT":
+            instructions.append("RIGHT")
+        elif direction == "DOWN":
+            instructions.append("TURN AROUND")
+             
         return instructions
 
 
