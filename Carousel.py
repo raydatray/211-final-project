@@ -1,10 +1,8 @@
 import time
 
+
 class Carousel:
     anglePerBlock = 185 #finalized value
-
-    #TODO: either init motors here as class variables, or accept them as inputs through the init 
-    #test comment....
 
     def __init__(self, carouselMotor, trapdoorMotor):
         self.blocks = ["D","E","F","A","B","C"]
@@ -29,18 +27,19 @@ class Carousel:
         
         self.carouselMotor.float_motor()
         return 
-        
+    
+    #DEPRECATED, you should use rotateToBlockByName
     def rotateToBlockByIndex(self, selectedIndex):
-        #only make if necessary
+        """
         if self.blocks[selectedIndex] == None:
             return "The block at the selected index has already been dropped"
         
         degreesToRotate = (selectedIndex - self.pointer) * self.anglePerBlock
 
-        #TODO: rotate the motor by degreesToRotate
 
         self.pointer = selectedIndex
         self.currentBlock = self.blocks[self.pointer]
+        """
         return 
 
     def getCurrentBlock(self):
@@ -59,18 +58,16 @@ class Carousel:
 
     def dropCurrentBlock(self):
         self.trapdoorMotor.set_limits(90,180)
-        self.trapdoorMotor.reset_encoder() #questionable usage may delete
+        self.trapdoorMotor.reset_encoder() 
+
         self.trapdoorMotor.set_position_relative(-150)
         time.sleep(2)
+
         self.trapdoorMotor.set_position_relative(220)
         time.sleep(2)
-        self.trapdoorMotor.set_power(0)
 
-        #Update the array and rotate the carousel
+        self.trapdoorMotor.set_power(0)
         self.unavailableBlocks.add(self.currentBlock)
-        #self.blocks[self.pointer] = None #Void the current index of the array 
-        #self.rotateToBlockByIndex((self.pointer +  1 % 6)) #Rotate to next index
-        
         return
 
 

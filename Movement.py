@@ -13,7 +13,6 @@ class Movement:
         self.leftColorSensor = leftColorSensor
         self.rightWheel = rightWheel
         self.leftWheel = leftWheel
-        #INIT MOTOR POWERS (TEST)
         self.rightPower = 0
         self.leftPower = 0
         self.orientation = "UP"
@@ -62,7 +61,7 @@ class Movement:
         self.rightWheel.set_power(28)
         self.leftWheel.set_power(20)
 
-    def partialMoveForward(self) -> bool:
+    def partialMoveForward(self):
         if self.orientation == "UP" or self.orientation == "DOWN":
             targetColor = "RED"
         else:
@@ -100,9 +99,9 @@ class Movement:
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
 
-        return True
+        return 
     
-    def fullMoveForward(self) -> bool:
+    def fullMoveForward(self):
         if self.orientation == "UP" or self.orientation == "DOWN":
             targetColor = "RED"
         else:
@@ -165,10 +164,10 @@ class Movement:
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
         
-        return True
+        return
             
 
-    def turnRight(self) -> bool:
+    def turnRight(self):
         #turn the left motor forward and the right motor backwards
         #if the orientation is up or down, rotate until blue is read
         #if the orientation is right or left, rotate until red is read
@@ -203,9 +202,9 @@ class Movement:
         else:
             self.orientation = "UP"
         
-        return True
+        return 
 
-    def turnLeft(self) -> bool:
+    def turnLeft(self):
         #turn the right motor forward and the left motor backwards
         #if the orientation is up or down, rotate until blue is read
         #if the orientation is right or left, rotate until red is read
@@ -240,10 +239,9 @@ class Movement:
         else:
             self.orientation = "UP"
         
-        return True
+        return 
     
-    #ADD TURNAROUND
-    def turnAround(self) -> bool:
+    def turnAround(self):
         leftColor = self.classify_color(self.leftColorSensor.get_rgb())
 
         if self.orientation == "UP" or self.orientation == "DOWN":
@@ -275,9 +273,9 @@ class Movement:
         else:
             self.orientation = "UP"
 
-        return True
+        return 
 
-    def backUp(self) -> bool:
+    def backUp(self):
         #basically turn right twice
         #rotate until the original color is read again
         if self.orientation == "UP" or self.orientation == "DOWN":
@@ -313,7 +311,7 @@ class Movement:
         self.rightWheel.set_power(0)
         self.leftWheel.set_power(0)
         
-        return True
+        return 
 
 
 
